@@ -1,4 +1,7 @@
 kakao.maps.load(async function() {
+    const card = document.querySelector(".card");
+    const closebtn = document.querySelector(".close_btn");
+
     var mapContainer = document.getElementById('map'); 
     var mapOption = { 
         center: new kakao.maps.LatLng(37.566826, 126.978656),
@@ -7,18 +10,15 @@ kakao.maps.load(async function() {
 
     var map = new kakao.maps.Map(mapContainer, mapOption);
 
-    // 사용자 위치 가져오기
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             function(position) {
-                // 성공 시 — 사용자 위치로 지도 이동
                 var lat = position.coords.latitude;
                 var lng = position.coords.longitude;
                 var userLocation = new kakao.maps.LatLng(lat, lng);
                 map.setCenter(userLocation);
             },
             function(error) {
-                // 실패 시 — 기본값(서울 시청) 유지
                 console.log("위치 정보를 가져올 수 없습니다:", error);
             }
         );
@@ -32,6 +32,10 @@ kakao.maps.load(async function() {
         const data = await respond.json();
         const geocoder = new kakao.maps.services.Geocoder();
 
+        const card = document.querySelector(".card");
+        const closebtn = document.querySelector(".close_btn");
+        const name = document.querySelector(".school_name");
+
         data.forEach((school)=> {
             if(school.address) {
                 geocoder.addressSearch(school.address, function(result, status) {
@@ -40,10 +44,21 @@ kakao.maps.load(async function() {
                     var marker = new kakao.maps.Marker({
                         position: markerPosition
                     });
-                        marker.setMap(map);
+                    marker.setMap(map);
+                    
+                    kakao.maps.event.addListener(marker, 'click', ()=> {
+                        name.innerText = school.name;
+                        card.classList.remove("hidden"); 
+                        card.classList.add("active");    
+                    });
                     }    
                 });
             };
+        });
+
+        closebtn.addEventListener("click", ()=> {
+            card.classList.remove("active"); 
+            card.classList.add("hidden");    
         });
 
     } catch (e) {

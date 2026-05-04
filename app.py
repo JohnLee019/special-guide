@@ -14,13 +14,13 @@ def root():
 
 @app.route('/api/schools')
 def get_schools():
-    region = request.args.get('region', '서울특별시')
+    region = request.args.get('region')
     NEIS_API_KEY = os.getenv("NEIS_API_KEY")
 
     params = {
         "KEY": NEIS_API_KEY,
         "Type": "json",
-        "pSize": 100,
+        "pSize": 1000,
         "SCHUL_KND_SC_NM": "특수학교",
         "LCTN_SC_NM": region,
     }
