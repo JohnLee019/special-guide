@@ -1,6 +1,39 @@
 kakao.maps.load(async function() {
     const card = document.querySelector(".card");
     const closebtn = document.querySelector(".close_btn");
+    const FIELD_MAP = {
+        school_name:     "name",
+        school_location: "address",
+        school_number:   "tel",
+        school_homepage: "homepage",
+        school_type:     "founder",
+        disable_type:    "disable_type"
+    };
+
+    function fillCard(school) {
+        for (const [elId, key] of Object.entries(FIELD_MAP)) {
+            const value = school[key] ?? "";
+            
+            if (elId === "school_homepage") {
+                const link = document.getElementById("school_homepage_link");
+                if (value) {
+                    link.href = value.startsWith("http") ? value : `https://${value}`;
+                    link.innerText = value;
+                } else {
+                    link.removeAttribute("href");
+                    link.innerText = "";
+                }
+            } else {
+                document.getElementById(elId).innerText = value;
+            }
+        }
+        const photo = document.getElementById("school_photo");
+        photo.src = school.photo;
+        photo.alt = `${school.name ?? ""} 사진`;
+
+        card.classList.remove("hidden");
+        card.classList.add("active");
+    }
 
     var mapContainer = document.getElementById('map'); 
     var mapOption = { 
@@ -17,6 +50,15 @@ kakao.maps.load(async function() {
                 var lng = position.coords.longitude;
                 var userLocation = new kakao.maps.LatLng(lat, lng);
                 map.setCenter(userLocation);
+
+                const userDot = new kakao.maps.CustomOverlay({
+                position: userLocation,
+                content: '<div class="user-location-dot"></div>',
+                xAnchor: 0.5,    
+                yAnchor: 0.5,    
+                zIndex: 100     
+            });
+            userDot.setMap(map);
             },
             function(error) {
                 console.log("위치 정보를 가져올 수 없습니다:", error);
@@ -32,9 +74,6 @@ kakao.maps.load(async function() {
         const data = await respond.json();
         const geocoder = new kakao.maps.services.Geocoder();
 
-        const card = document.querySelector(".card");
-        const closebtn = document.querySelector(".close_btn");
-        const name = document.querySelector(".school_name");
 
         data.forEach((school)=> {
             if(school.address) {
@@ -47,9 +86,7 @@ kakao.maps.load(async function() {
                     marker.setMap(map);
                     
                     kakao.maps.event.addListener(marker, 'click', ()=> {
-                        name.innerText = school.name;
-                        card.classList.remove("hidden"); 
-                        card.classList.add("active");    
+                        fillCard(school);
                     });
                     }    
                 });

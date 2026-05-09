@@ -9,17 +9,24 @@
 </head>
 <body>
     <div id="map"></div>
-    <script src="{{ url_for('static', filename='js/map.js')}}"></script>
     <div class="card hidden">
         <div class="card_header">
-            <p class="school_name">학교 이름</p>
+            <p id="school_name">학교 이름</p>
             <button class="close_btn">← 뒤로가기</button>
         </div>
         <div class="card_content">
-            <p class="school_content">학교 관련 내용</p>
-            <p class="school_location">학교 주소</p>
+            <img id="school_photo" src="" alt="학교 사진">
+            <p id="school_location">학교 주소</p>
+            <p id="school_homepage">
+                <a id="school_homepage_link" href="#" target="_blank" rel="noopener"></a>
+            </p>
+            <p id="school_type">공립/사립 여부</p>
+            <p id="disable_type">어떤 장애인 전용 학교</p>
+            <p id="school_number">학교 전화번호</p>
+            <!-- AI 쪽에서는 진짜 사용자의 사용할 수 있는 교육비 상황 까지 고려를 하면 괜찮을 것 같아 -->
             <!-- 만약에 학생대 교사 비율을 (교사 수 나누기 학새 전체 수) 가져올 수 있으면 그것을 원 그래프 형태로 보여주기  -->
         </div>
     </div>
+    <script src="{{ url_for('static', filename='js/map.js')}}"></script>
 </body>
 </html>

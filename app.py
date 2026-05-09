@@ -4,8 +4,13 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
 app = Flask(__name__)
+
+PHOTO_BASE = "/static/images"
+
+SCHOOL_PHOTOS = {
+    # 한 사진 5개만 
+}
 
 @app.route('/')
 def root():
@@ -15,37 +20,37 @@ def root():
 @app.route('/api/schools')
 def get_schools():
     region = request.args.get('region')
-    NEIS_API_KEY = os.getenv("NEIS_API_KEY")
+    key  = os.getenv("DATA_GO_KR_KEY")
+    uddi = os.getenv("SPECIAL_SCHOOL_UDDI")
 
+    url = f"https://api.odcloud.kr/api/15052682/v1/{uddi}"
     params = {
-        "KEY": NEIS_API_KEY,
-        "Type": "json",
-        "pSize": 1000,
-        "SCHUL_KND_SC_NM": "특수학교",
-        "LCTN_SC_NM": region,
+        "serviceKey": key,
+        "page": 1,
+        "perPage": 500,      
+        "returnType": "JSON"
     }
-    res = requests.get("https://open.neis.go.kr/hub/schoolInfo", params=params)
+    res = requests.get(url, params=params)
     data = res.json()
 
-    if "schoolInfo" not in data:
-        return jsonify([])
-    
-    rows = data["schoolInfo"][1]["row"]
+    rows = data.get("data", [])
+
+    if region:
+        rows = [r for r in rows if r.get("시도") == region]
+
     schools = [
         {
-            "name": row.get("SCHUL_NM"),
-            "address": row.get("ORG_RDNMA"),
-            "tel": row.get("ORG_TELNO"),
-            "homepage": row.get("HMPG_ADRES"),
-            "founder": row.get("FOND_SC_NM"),       
-            "school_code": row.get("SD_SCHUL_CODE"),
+            "name":         r.get("기관명"),
+            "address":      r.get("주소"),
+            "tel":          r.get("행정실") or r.get("교무실") or r.get("교장실"),
+            "homepage":     r.get("홈페이지"),
+            "founder":      r.get("설립별"),       
+            "disable_type": r.get("장애영역"),  
+            "photo":        SCHOOL_PHOTOS.get(r.get("기관명"), f"{PHOTO_BASE}/default.jpg")
         }
-        for row in rows
+        for r in rows
     ]
-
     return jsonify(schools)
-
-
 
 if __name__ == "__main__":
     app.run()
