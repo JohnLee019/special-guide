@@ -89,3 +89,40 @@ html, body {
     border-radius: 50%;
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
 }
+
+.chart_section {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+}
+.chart_section h4 {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    color: #555;
+}
+#school_chart {
+    max-height: 180px;
+}
+
+/* 5. 현재 위치로 돌아가기 버튼 */
+.current_location {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%); /* 자기 너비의 절반만큼 왼쪽으로 → 정확히 가운데 정렬 */
+    z-index: 10;                 /* 지도 위에 보이도록 */
+}
+
+#back_to_current_location {
+    background-color: white;
+    color: #333;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 999px;        /* 완전한 알약(pill) 모양 */
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* 카드와 통일감 있는 그림자 */
+    transition: all 0.2s ease-in-out;
+    white-space: nowrap;         /* 글자 줄바꿈 방지 */
+}

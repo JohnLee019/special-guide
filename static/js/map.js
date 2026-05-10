@@ -1,39 +1,7 @@
 kakao.maps.load(async function() {
     const card = document.querySelector(".card");
     const closebtn = document.querySelector(".close_btn");
-    const FIELD_MAP = {
-        school_name:     "name",
-        school_location: "address",
-        school_number:   "tel",
-        school_homepage: "homepage",
-        school_type:     "founder",
-        disable_type:    "disable_type"
-    };
-
-    function fillCard(school) {
-        for (const [elId, key] of Object.entries(FIELD_MAP)) {
-            const value = school[key] ?? "";
-            
-            if (elId === "school_homepage") {
-                const link = document.getElementById("school_homepage_link");
-                if (value) {
-                    link.href = value.startsWith("http") ? value : `https://${value}`;
-                    link.innerText = value;
-                } else {
-                    link.removeAttribute("href");
-                    link.innerText = "";
-                }
-            } else {
-                document.getElementById(elId).innerText = value;
-            }
-        }
-        const photo = document.getElementById("school_photo");
-        photo.src = school.photo;
-        photo.alt = `${school.name ?? ""} 사진`;
-
-        card.classList.remove("hidden");
-        card.classList.add("active");
-    }
+    const back_to_current_location = document.getElementById("back_to_current_location");
 
     var mapContainer = document.getElementById('map'); 
     var mapOption = { 
@@ -43,12 +11,14 @@ kakao.maps.load(async function() {
 
     var map = new kakao.maps.Map(mapContainer, mapOption);
 
+    let userLocation = null;
+
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-            function(position) {
+            function (position) {
                 var lat = position.coords.latitude;
                 var lng = position.coords.longitude;
-                var userLocation = new kakao.maps.LatLng(lat, lng);
+                userLocation = new kakao.maps.LatLng(lat, lng);
                 map.setCenter(userLocation);
 
                 const userDot = new kakao.maps.CustomOverlay({
@@ -96,6 +66,30 @@ kakao.maps.load(async function() {
         closebtn.addEventListener("click", ()=> {
             card.classList.remove("active"); 
             card.classList.add("hidden");    
+        });
+
+        back_to_current_location.addEventListener("click", () => {
+            if (userLocation) {
+                map.setCenter(userLocation);
+                map.setLevel(5);
+            } else if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userLocation = new kakao.maps.LatLng(
+                            position.coords.latitude,
+                            position.coords.longitude
+                        );
+                        map.setCenter(userLocation);
+                        map.setLevel(5);
+                    },
+                    (error) => {
+                        alert("위치 정보를 가져올 수 없습니다.");
+                        console.log(error);
+                    }
+                );
+            } else {
+                alert("이 브라우저는 위치 정보를 지원하지 않습니다.");
+            }
         });
 
     } catch (e) {
