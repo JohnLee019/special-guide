@@ -126,3 +126,72 @@ html, body {
     transition: all 0.2s ease-in-out;
     white-space: nowrap;         /* 글자 줄바꿈 방지 */
 }
+
+#total_students {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background-color: #f7f9fc;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #444;
+    text-align: center;
+}
+
+.disability_section {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+    height: 220px;            /* 도넛 차트가 잘 보이도록 */
+    position: relative;
+}
+.disability_section h4 {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    color: #555;
+}
+.disability_section .caption {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-size: 0.72rem;
+    color: #999;
+}
+
+.stats_section {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+}
+.stats_section h4 {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    color: #555;
+}
+.stats_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+.stat {
+    background: #f7f9fc;
+    border-radius: 8px;
+    padding: 12px 10px;
+    text-align: center;
+}
+.stat_value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2c5aa0;
+    line-height: 1.1;
+}
+.stat_label {
+    font-size: 0.75rem;
+    color: #777;
+    margin-top: 4px;
+}
+.stat_extra {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: #666;
+    text-align: center;
+}

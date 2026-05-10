@@ -19,18 +19,51 @@
             <img id="school_photo" src="" alt="학교 사진">
             <p id="school_location">학교 주소</p>
             <p id="disable_type">어떤 장애인 전용 학교</p>
-            <p id="school_type">공립/사립 여부</p>
-            <p id="school_number">학교 전화번호</p>
+            <p id="school_type">설립구분</p>
+            <p id="school_number">대표번호</p>
             <p id="school_homepage">
                 <a id="school_homepage_link" href="#" target="_blank" rel="noopener"></a>
             </p>
             <div class="chart_section">
-                <h4>학급당 학생수</h4>
+                <h4>과정별 학생수</h4>
                 <canvas id="school_chart"></canvas>
             </div>
+            <p id="total_students">총 학생 수</p>
+            <div class="disability_section">
+                <h4>장애유형 구성비</h4>
+                <canvas id="disability_chart"></canvas>
+                <p class="caption">*최큰 신입생 기준</p>
+            </div>
+            <div class="stats_section">
+                <h4>방과후학교</h4>
+                <div class="stats_grid">
+                    <div class="stat">
+                        <div class="stat_value" id="stat_curr_pgm">-</div>
+                        <div class="stat_label">교과 프로그램</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat_value" id="stat_curr_std">-</div>
+                        <div class="stat_label">교과 수강생</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat_value" id="stat_apt_pgm">-</div>
+                        <div class="stat_label">특기적성</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat_value" id="stat_apt_std">-</div>
+                        <div class="stat_label">특기 수강생</div>
+                    </div>
+                     <div class="stat">
+                        <div class="stat_value" id="stat_special_cls">-</div>
+                        <div class="stat_label">종일반 학급</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat_value" id="stat_special_std">-</div>
+                        <div class="stat_label">종일반 학생</div>
+                    </div>
+                </div>
+            </div>
             <!-- AI 쪽에서는 진짜 사용자의 사용할 수 있는 교육비 상황 까지 고려를 하면 괜찮을 것 같아 -->
-
-            <!-- 현재 사용자의 위치로 돌아가는 버튼 추가 -->
         </div>
     </div>
     <div class="current_location">
@@ -38,6 +71,5 @@
     </div>
     <script src="{{ url_for('static', filename='js/card.js')}}"></script>
     <script src="{{ url_for('static', filename='js/map.js')}}"></script>
-    <script src="{{ url_for('static', filename='js/graph.js')}}"></script>
 </body>
 </html>
