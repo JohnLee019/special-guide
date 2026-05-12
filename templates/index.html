@@ -63,7 +63,45 @@
                     </div>
                 </div>
             </div>
-            <!-- AI 쪽에서는 진짜 사용자의 사용할 수 있는 교육비 상황 까지 고려를 하면 괜찮을 것 같아 -->
+        </div>
+    </div>
+    <div class="filter">
+        <div class="filter_box">
+            <button class="close_btn">← 뒤로가기</button>
+            <label for="what_school">학교 종류</label>
+            <select id="what_school" name="what_school">
+                <option value="all">전체</option>
+                <option value="public">공립</option>
+                <option value="private">사립</option>
+            </select>
+            <label for="grade">학년</label>
+            <select id="grade" name="grade">
+                <option value="kindergarden">유치원</option>
+                <option value="lower">초등학교</option>
+                <option value="middle">중학교</option>
+                <option value="high">고등학교</option>
+                <option value="major">전공과</option>
+            </select>
+            <!-- 현재 위치를 바탕으로 떨어져 있는 거리를 계산하는 것을 하면 좋을 것 같은데 어떻게 하는지 모르겠음 -->
+            <label for="distance">거리</label>
+            <select id="distance" name="distance">
+                <option value="1km">1km 이내</option>
+                <option value="3km">3km 이내</option>
+                <option value="5km">5km 이내</option>
+                <option value="10km">10km 이내</option>
+                <option value="all">전체</option>
+            </select>
+            <label for="disability_type">장애 유형</label>
+            <select id="disability_type" name="disability_type">
+                <option value="all">전체</option>
+                <option value="visual">시각장애</option>
+                <option value="hearing">청각장애</option>
+                <option value="intellectual">지적장애</option>
+                <option value="physical">지체장애</option>
+                <option value="emotional">정서장애</option>
+                <option value="autism">자폐성장애</option>
+            </select>
+            <!-- 사용자가 지불할 수 있는 교육비 상황 고려하는 필터 (이거는 AI 쪽에서 해결해야 할 수 있음)-->
         </div>
     </div>
     <div class="current_location">
