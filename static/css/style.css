@@ -216,3 +216,233 @@ html, body {
 .card::-webkit-scrollbar-track {
     background: transparent;
 }
+
+/* =========================================
+   필터(Filter) 모달 및 UI 디자인
+========================================= */
+
+/* 1. 필터 전체 배경 (지도 위를 반투명하게 덮음) */
+.filter {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); /* 반투명 검은색 배경 */
+    z-index: 20; /* 카드(10)보다 위층에 배치 */
+    
+    /* 기본적으로 화면에서 숨김 (JS로 .active 추가 시 나타남) */
+    opacity: 0;
+    visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease-in-out;
+}
+
+/* 필터가 활성화되었을 때 */
+.filter.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 2. 필터 박스 (실제 흰색 컨텐츠 영역) */
+.filter_box {
+    background-color: white;
+    width: 340px;
+    max-width: 90%;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    
+    max-height: 85vh; /* 화면 높이를 넘지 않도록 설정 */
+    overflow-y: auto; /* 내용이 길면 스크롤 생성 */
+    
+    /* 아래에서 위로 살짝 올라오는 애니메이션 효과 */
+    transform: translateY(20px);
+    transition: transform 0.3s ease-in-out;
+}
+
+.filter.active .filter_box {
+    transform: translateY(0);
+}
+
+/* 3. 헤더 (제목 및 닫기 버튼) */
+.filter_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #333;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+}
+
+.filter_header h3 {
+    font-size: 1.15rem;
+    color: #222;
+}
+
+/* 4. 각 필터 항목 그룹 */
+.filter_group {
+    margin-bottom: 20px;
+}
+
+.filter_group > label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 8px;
+}
+
+/* Select 박스 (드롭다운) 디자인 */
+.filter_group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #333;
+    background-color: #fdfdfd;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.filter_group select:focus {
+    border-color: #2c5aa0; /* 선택 시 기존 통계 색상과 통일감 부여 */
+}
+
+/* 5. 다중 선택 (체크박스) 디자인 - 알약(Pill) 모양 뱃지 느낌 */
+.checkbox_group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.checkbox_group label {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #444;
+    background-color: #f7f9fc;
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    font-weight: normal;
+    margin-bottom: 0;
+    transition: background-color 0.2s;
+}
+
+.checkbox_group label:hover {
+    background-color: #eef2f6;
+}
+
+.checkbox_group input[type="checkbox"] {
+    margin-right: 6px;
+    cursor: pointer;
+    accent-color: #2c5aa0; /* 체크 표시 색상 */
+}
+
+/* 안내 문구 */
+.filter_hint {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 6px;
+    line-height: 1.4;
+}
+
+/* 6. 하단 버튼 영역 (초기화 & 적용) */
+.filter_footer {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+    border-top: 1px solid #eee;
+    padding-top: 16px;
+}
+
+.filter_footer button {
+    flex: 1; /* 두 버튼을 5:5 비율로 맞춤 */
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn_reset {
+    background-color: #f1f3f5;
+    color: #555;
+}
+
+.btn_reset:hover {
+    background-color: #e9ecef;
+}
+
+.btn_apply {
+    background-color: #2c5aa0; /* 메인 테마 색상 */
+    color: white;
+}
+
+.btn_apply:hover {
+    background-color: #21437a;
+}
+
+/* 🌟 필터 열기 버튼 위치 및 디자인 */
+.filter_toggle {
+    position: fixed;
+    bottom: 24px;
+    right: 20px; /* 화면 우측 하단에 배치 */
+    z-index: 10; /* 지도 위에 보이도록 */
+}
+
+#open_filter_btn {
+    background-color: #2c5aa0;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s ease-in-out;
+}
+
+#open_filter_btn:hover {
+    background-color: #21437a;
+}
+
+.result-info {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%); /* 화면 정확히 중앙에 배치 */
+    background-color: rgba(44, 90, 160, 0.9); /* 파란색 반투명 배경 */
+    color: white;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    z-index: 15; /* 지도(1)나 카드(10)보다 높게 설정 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    
+    /* 부드럽게 나타나고 사라지는 효과 */
+    opacity: 1;
+    visibility: visible;
+    transition: all 0.4s ease-in-out;
+}
+
+.result-info.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, -10px); /* 사라질 때 살짝 위로 올라감 */
+}
+
+.result-info span {
+    color: #ffd66b; /* 숫자에만 노란색 포인트 */
+    font-size: 1.1rem;
+}

@@ -53,17 +53,21 @@ async function fetchAndDrawChart(school) {
         totalEl.style.display = 'none';
     };
 
-    if (!school.sido_code || !school.sgg_code || !school.name) {
+    // 🌟 변경: 이제 sido_code, sgg_code 확인을 안 하고 이름(name)만 있으면 통과!
+    if (!school.name) {
         hideAll();
         return;
     }
 
     try {
-        const url = `/api/school_detail?school_name=${encodeURIComponent(school.name)}&sido_code=${school.sido_code}&sgg_code=${school.sgg_code}`;
+        // 🌟 변경: 파라미터에서 sido_code, sgg_code를 빼고 이름만 서버로 보냅니다.
+        const url = `/api/school_detail?school_name=${encodeURIComponent(school.name)}`;
         const res = await fetch(url);
+        
         if (!res.ok) { hideAll(); return; }
 
         const detail = await res.json();
+        
         if (detail.error) { hideAll(); return; }
 
         const levels = detail.levels;

@@ -10,6 +10,9 @@
 </head>
 <body>
     <div id="map"></div>
+    <div id="result_info" class="result-info hidden">
+        조건에 맞는 학교: <span>0</span>개
+    </div>
     <div class="card hidden">
         <div class="card_header">
             <p id="school_name">학교 이름</p>
@@ -66,48 +69,107 @@
         </div>
     </div>
     <div class="filter">
-        <div class="filter_box">
-            <button class="close_btn">← 뒤로가기</button>
-            <label for="what_school">학교 종류</label>
-            <select id="what_school" name="what_school">
-                <option value="all">전체</option>
-                <option value="public">공립</option>
-                <option value="private">사립</option>
-            </select>
-            <label for="grade">학년</label>
-            <select id="grade" name="grade">
-                <option value="kindergarden">유치원</option>
-                <option value="lower">초등학교</option>
-                <option value="middle">중학교</option>
-                <option value="high">고등학교</option>
-                <option value="major">전공과</option>
-            </select>
-            <!-- 현재 위치를 바탕으로 떨어져 있는 거리를 계산하는 것을 하면 좋을 것 같은데 어떻게 하는지 모르겠음 -->
-            <label for="distance">거리</label>
-            <select id="distance" name="distance">
-                <option value="1km">1km 이내</option>
-                <option value="3km">3km 이내</option>
-                <option value="5km">5km 이내</option>
-                <option value="10km">10km 이내</option>
-                <option value="all">전체</option>
-            </select>
-            <label for="disability_type">장애 유형</label>
-            <select id="disability_type" name="disability_type">
-                <option value="all">전체</option>
-                <option value="visual">시각장애</option>
-                <option value="hearing">청각장애</option>
-                <option value="intellectual">지적장애</option>
-                <option value="physical">지체장애</option>
-                <option value="emotional">정서장애</option>
-                <option value="autism">자폐성장애</option>
-            </select>
-            <!-- 사용자가 지불할 수 있는 교육비 상황 고려하는 필터 (이거는 AI 쪽에서 해결해야 할 수 있음)-->
+    <div class="filter_box">
+        <div class="filter_header">
+            <h3>상세 필터</h3>
+            <button class="close_btn" aria-label="필터 닫기">✕</button>
         </div>
+
+        <div class="filter_body">
+            <div class="filter_group">
+                <label for="sido">지역 (시/도)</label>
+                <select id="sido" name="sido">
+                    <option value="all">전체</option>
+                    <option value="서울특별시">서울특별시</option>
+                    <option value="부산광역시">부산광역시</option>
+                    <option value="대구광역시">대구광역시</option>
+                    <option value="인천광역시">인천광역시</option>
+                    <option value="광주광역시">광주광역시</option>
+                    <option value="대전광역시">대전광역시</option>
+                    <option value="울산광역시">울산광역시</option>
+                    <option value="세종특별자치시">세종특별자치시</option>
+                    <option value="경기도">경기도</option>
+                    <option value="강원특별자치도">강원특별자치도</option>
+                    <option value="충청북도">충청북도</option>
+                    <option value="충청남도">충청남도</option>
+                    <option value="전라남도">전라남도</option>
+                    <option value="경상북도">경상북도</option>
+                    <option value="경상남도">경상남도</option>
+                    <option value="제주특별자치도">제주특별자치도</option>
+                    <option value="전북특별자치도">전북특별자치도</option>
+                </select>
+            </div>
+            <div class="filter_group">
+                <label for="what_school">학교 종류</label>
+                <select id="what_school" name="what_school">
+                    <option value="all">전체</option>
+                    <option value="국립">국립</option>
+                    <option value="공립">공립</option>
+                    <option value="사립">사립</option>
+                </select>
+            </div>
+
+            <div class="filter_group">
+                <label>과정 (다중 선택 가능)</label>
+                <div class="checkbox_group">
+                    <label><input type="checkbox" name="grade" value="유치부"> 유치부</label>
+                    <label><input type="checkbox" name="grade" value="초등부"> 초등부</label>
+                    <label><input type="checkbox" name="grade" value="중등부"> 중등부</label>
+                    <label><input type="checkbox" name="grade" value="고등부"> 고등부</label>
+                    <label><input type="checkbox" name="grade" value="전공과"> 전공과</label>
+                </div>
+            </div>
+
+            <div class="filter_group">
+                <label for="disability_type">장애 유형</label>
+                <select id="disability_type" name="disability_type">
+                    <option value="all">전체</option>
+                    <option value="시각장애">시각장애</option>
+                    <option value="청각장애">청각장애</option>
+                    <option value="정신지체">정신지체 (지적장애)</option>
+                    <option value="지체장애">지체장애</option>
+                    <option value="정서·행동장애">정서·행동장애</option>
+                    <option value="자폐성장애">자폐성장애</option>
+                    <option value="발달지체">발달지체</option>
+                </select>
+            </div>
+
+            <div class="filter_group">
+                <label for="distance">내 위치 기준 거리</label>
+                <select id="distance" name="distance">
+                    <option value="all">전체</option>
+                    <option value="1">1km 이내</option>
+                    <option value="3">3km 이내</option>
+                    <option value="5">5km 이내</option>
+                    <option value="10">10km 이내</option>
+                </select>
+                <p class="filter_hint">* 내 위치 정보를 허용한 경우에만 정확히 작동합니다.</p>
+            </div>
+        </div>
+
+        <div class="filter_group">
+            <label>방과후 프로그램 (선택 항목 모두 운영)</label>
+            <div class="checkbox_group">
+                <label><input type="checkbox" name="afterschool" value="curr"> 교과 프로그램</label>
+                <label><input type="checkbox" name="afterschool" value="apt"> 특기적성</label>
+                <label><input type="checkbox" name="afterschool" value="allday"> 종일반 학급</label>
+            </div>
+        </div>
+
+        <div class="filter_footer">
+            <button id="reset_filter" class="btn_reset">초기화</button>
+            <button id="apply_filter" class="btn_apply">조건 적용하기</button>
+        </div>
+    </div>
     </div>
     <div class="current_location">
         <button id="back_to_current_location">📍현재 위치로 돌아가기</button>
     </div>
+    <div class="filter_toggle">
+        <button id="open_filter_btn">🔍 상세 필터</button>
+    </div>
     <script src="{{ url_for('static', filename='js/card.js')}}"></script>
     <script src="{{ url_for('static', filename='js/map.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/filter.js')}}"></script>
 </body>
 </html>
