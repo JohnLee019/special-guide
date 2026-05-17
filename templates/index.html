@@ -10,6 +10,10 @@
 </head>
 <body>
     <div id="map"></div>
+
+    <!-- 브랜드 워터마크의 코랄 시그니처 점 (CSS 워드마크와 짝을 이룸) -->
+    <div class="brand-dot"></div>
+
     <div id="result_info" class="result-info hidden">
         조건에 맞는 학교: <span>0</span>개
     </div>
@@ -35,7 +39,7 @@
             <div class="disability_section">
                 <h4>장애유형 구성비</h4>
                 <canvas id="disability_chart"></canvas>
-                <p class="caption">*최큰 신입생 기준</p>
+                <p class="caption">*최근 신입생 기준</p>
             </div>
             <div class="stats_section">
                 <h4>방과후학교</h4>
@@ -167,6 +171,22 @@
     </div>
     <div class="filter_toggle">
         <button id="open_filter_btn">🔍 상세 필터</button>
+        <button id="open_ai_chat_btn">✨ AI 맞춤 추천</button>
+    </div>
+    <div id="ai_chat_modal" class="ai-chat-window hidden">
+        <div class="chat-header">
+            <h3>✨ AI 길잡이</h3>
+            <button id="close_chat_btn">✕</button>
+        </div>
+        <div class="chat-body" id="chat_body">
+            <div class="chat-bubble ai">
+                안녕하세요! 아이의 나이, 장애 유형, 원하시는 지역이나 방과후 프로그램 등을 편하게 말씀해 주세요. 딱 맞는 학교를 찾아드릴게요! 😊
+            </div>
+            </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat_input" placeholder="예: 하남시에 있는 지적장애 초등학교 찾아줘">
+            <button id="send_chat_btn">전송</button>
+        </div>
     </div>
     <script src="{{ url_for('static', filename='js/card.js')}}"></script>
     <script src="{{ url_for('static', filename='js/map.js')}}"></script>

@@ -1,448 +1,1203 @@
+/* =========================================================
+   특수 길잡이 — Premium Cartographer Edition
+   Design system: warm cream + deep navy + signature coral
+========================================================= */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&display=swap');
+
+:root {
+    /* Brand palette */
+    --bg-cream: #FAF6F0;
+    --bg-paper: #FFFFFF;
+    --ink-deep: #0E1A2B;
+    --ink-mid:  #2D3748;
+    --ink-soft: #6B7280;
+    --ink-faint:#9CA3AF;
+
+    --coral:        #FF5A5F;   /* signature accent */
+    --coral-soft:   #FF8589;
+    --coral-glow:   rgba(255, 90, 95, 0.35);
+    --amber:        #FFB347;
+    --amber-soft:   #FFD089;
+    --mint:         #06D6A0;
+    --mint-soft:    #5EEAC0;
+    --indigo:       #4F46E5;
+    --indigo-deep:  #312E81;
+    --violet:       #8B5CF6;
+
+    --border-hair:  rgba(14, 26, 43, 0.08);
+    --border-soft:  rgba(14, 26, 43, 0.06);
+    --border-strong:rgba(14, 26, 43, 0.14);
+
+    /* Shadows — layered for depth */
+    --shadow-sm:  0 1px 2px rgba(14,26,43,0.04), 0 1px 3px rgba(14,26,43,0.06);
+    --shadow-md:  0 4px 8px -2px rgba(14,26,43,0.08), 0 8px 24px -4px rgba(14,26,43,0.10);
+    --shadow-lg:  0 12px 24px -8px rgba(14,26,43,0.12), 0 24px 48px -12px rgba(14,26,43,0.18);
+    --shadow-xl:  0 24px 48px -12px rgba(14,26,43,0.22), 0 48px 96px -24px rgba(14,26,43,0.20);
+    --shadow-coral: 0 8px 24px -6px var(--coral-glow);
+
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+    --radius-pill: 999px;
+
+    --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 html, body {
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    background: var(--bg-cream);
+    color: var(--ink-deep);
 }
 #map {
     width: 100%;
     height: 100%;
+    filter: saturate(0.92) contrast(1.02);
 }
 
-/* 1. 카드 기본 디자인 (지도 위에 떠 있도록 설정) */
+/* Subtle warm vignette over the entire viewport for editorial feel */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    background:
+        radial-gradient(ellipse at top left, rgba(255, 179, 71, 0.04) 0%, transparent 40%),
+        radial-gradient(ellipse at bottom right, rgba(79, 70, 229, 0.04) 0%, transparent 40%);
+}
+
+/* =========================================================
+   0. 브랜딩 워터마크 (좌상단 코너 마크)
+========================================================= */
+body::after {
+    content: '특수 길잡이 · A Guide for Every Child';
+    position: fixed;
+    top: 22px;
+    left: 24px;
+    z-index: 11;
+    font-family: 'Fraunces', 'Pretendard', serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    color: var(--ink-deep);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px) saturate(1.4);
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
+    padding: 10px 18px 10px 36px;
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-hair);
+    pointer-events: none;
+}
+/* tiny coral dot before the wordmark */
+.brand-dot {
+    position: fixed;
+    top: 31px;
+    left: 36px;
+    z-index: 12;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--coral);
+    box-shadow: 0 0 0 4px rgba(255, 90, 95, 0.18), 0 0 12px var(--coral-glow);
+    pointer-events: none;
+    animation: brand-pulse 2.4s var(--ease-out) infinite;
+}
+@keyframes brand-pulse {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(255, 90, 95, 0.18), 0 0 12px var(--coral-glow); }
+    50%      { box-shadow: 0 0 0 8px rgba(255, 90, 95, 0.08), 0 0 20px var(--coral-glow); }
+}
+
+/* =========================================================
+   1. 학교 정보 카드 — 좌측 플로팅 패널
+========================================================= */
 .card {
     position: absolute;
-    top: 20px;       /* 화면 위쪽에서 20px 여백 */
-    left: 20px;      /* 화면 왼쪽에서 20px 여백 (원하는 위치로 수정 가능) */
-    z-index: 10;     /* 카카오맵보다 무조건 위층에 보이도록 설정 */
-    
-    background-color: white;
-    width: 320px;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* 부드러운 그림자 효과 */
-    
-    max-height: calc(100vh - 40px);  /* 화면 높이에서 위/아래 여백 20px씩 빼기 */
+    top: 80px;
+    left: 20px;
+    z-index: 10;
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(250,246,240,0.96) 100%);
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+
+    width: 360px;
+    padding: 0 26px 26px;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-hair);
+    box-shadow: var(--shadow-xl);
+
+    max-height: calc(100vh - 100px);
     overflow-y: auto;
 
-    /* 부드럽게 나타나는 애니메이션 효과 */
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px); /* 살짝 위에서 아래로 내려오는 효과 */
-    transition: all 0.3s ease-in-out;
+    transform: translateX(-24px) scale(0.98);
+    transition: opacity 0.45s var(--ease-out),
+                visibility 0.45s var(--ease-out),
+                transform  0.55s var(--ease-spring);
+}
+.card.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0) scale(1);
 }
 
-/* 2. 카드 내부 요소 스타일링 (선택 사항) */
 .card_header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
-
+    padding: 22px 0 14px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border-hair);
     position: sticky;
-    top: -20px;              /* 카드 padding 만큼 보정 */
-    background: white;
-    padding-top: 10px;
-    z-index: 1;
+    top: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.98) 70%, rgba(255,255,255,0));
+    backdrop-filter: blur(8px);
+    z-index: 2;
 }
 
 #school_name {
-    font-size: 1.2rem;
-    font-weight: bold;
+    font-family: 'Fraunces', 'Pretendard', serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--ink-deep);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    max-width: 220px;
 }
 
-.close_btn {
-    background: none;
-    border: none;
-    color: #888;
-    cursor: pointer;
-    font-size: 0.9rem;
+/* —— 카드 내 작은 라벨/속성 —— */
+.card_content {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
-
-.close_btn:hover {
-    color: #333;
-}
-
-/* 3. hidden 클래스 (html에 기본으로 적어둔 것 처리) */
-.card.hidden {
-    opacity: 0;
-    visibility: hidden;
-}
-
-/* 4. active 클래스가 붙었을 때 (화면에 표시) */
-.card.active {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0); /* 원래 위치로 복귀 */
-}
-
 #school_photo {
     width: 100%;
-    height: 160px;
-    object-fit: cover;       /* 비율 안 깨지게 */
-    border-radius: 8px;
-    margin-bottom: 10px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-hair);
 }
-
-/* 사용자 현재 위치 점 */
-.user-location-dot {
-    width: 16px;
-    height: 16px;
-    background-color: #f44242;
-    border: 3px solid white;
-    border-radius: 50%;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+#school_location,
+#disable_type,
+#school_type,
+#school_number {
+    font-size: 0.92rem;
+    color: var(--ink-mid);
+    line-height: 1.55;
+    padding-left: 24px;
+    position: relative;
 }
-
-.chart_section {
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid #eee;
-}
-.chart_section h4 {
-    font-size: 0.9rem;
-    margin-bottom: 8px;
-    color: #555;
-}
-#school_chart {
-    max-height: 180px;
-}
-
-/* 5. 현재 위치로 돌아가기 버튼 */
-.current_location {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%); /* 자기 너비의 절반만큼 왼쪽으로 → 정확히 가운데 정렬 */
-    z-index: 10;                 /* 지도 위에 보이도록 */
-}
-
-#back_to_current_location {
-    background-color: white;
-    color: #333;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 999px;        /* 완전한 알약(pill) 모양 */
+#school_location::before { content: '📍'; }
+#disable_type::before    { content: '🧩'; }
+#school_type::before     { content: '🏛'; }
+#school_number::before   { content: '📞'; }
+#school_location::before, #disable_type::before,
+#school_type::before, #school_number::before {
+    position: absolute;
+    left: 0;
+    top: 0;
     font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* 카드와 통일감 있는 그림자 */
-    transition: all 0.2s ease-in-out;
-    white-space: nowrap;         /* 글자 줄바꿈 방지 */
+    filter: grayscale(0.2);
+}
+#school_homepage a {
+    display: inline-block;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--coral);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 90, 95, 0.08);
+    transition: all 0.2s var(--ease-out);
+}
+#school_homepage a:hover {
+    background: rgba(255, 90, 95, 0.16);
+    transform: translateY(-1px);
+}
+
+/* —— 차트 섹션 —— */
+.chart_section, .disability_section, .stats_section {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border-hair);
+}
+.chart_section h4, .disability_section h4, .stats_section h4 {
+    font-family: 'Fraunces', 'Pretendard', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink-deep);
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.chart_section h4::before    { content: ''; display:inline-block; width:4px; height:18px; background: linear-gradient(180deg, var(--coral), var(--amber)); border-radius: 4px;}
+.disability_section h4::before { content: ''; display:inline-block; width:4px; height:18px; background: linear-gradient(180deg, var(--indigo), var(--violet)); border-radius: 4px;}
+.stats_section h4::before   { content: ''; display:inline-block; width:4px; height:18px; background: linear-gradient(180deg, var(--mint), #0EA5E9); border-radius: 4px;}
+
+/* Chart canvas containers — give them breathing room and a soft bg */
+#school_chart, #disability_chart {
+    background: linear-gradient(180deg, #FBFAF6 0%, #FFFFFF 100%);
+    border-radius: var(--radius-md);
+    padding: 10px;
+    border: 1px solid var(--border-soft);
+    min-height: 180px;
+    max-height: 220px;
 }
 
 #total_students {
-    margin-top: 10px;
-    padding: 10px 12px;
-    background-color: #f7f9fc;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    color: #444;
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, var(--ink-deep) 0%, #1E3A5F 100%);
+    color: white;
+    border-radius: var(--radius-md);
+    font-size: 0.92rem;
+    font-weight: 700;
     text-align: center;
-}
-
-.disability_section {
-    margin-top: 14px;
-    padding-top: 12px;
-    border-top: 1px solid #eee;
-    height: 220px;            /* 도넛 차트가 잘 보이도록 */
+    letter-spacing: -0.01em;
+    box-shadow: 0 8px 20px -6px rgba(14, 26, 43, 0.4);
     position: relative;
+    overflow: hidden;
 }
-.disability_section h4 {
-    font-size: 0.9rem;
-    margin-bottom: 8px;
-    color: #555;
-}
-.disability_section .caption {
+#total_students::before {
+    content: '';
     position: absolute;
-    bottom: 2px;
-    right: 4px;
-    font-size: 0.72rem;
-    color: #999;
+    inset: 0;
+    background: radial-gradient(circle at top right, rgba(255,179,71,0.15), transparent 60%);
+    pointer-events: none;
 }
 
-.stats_section {
-    margin-top: 14px;
-    padding-top: 12px;
-    border-top: 1px solid #eee;
+.disability_section .caption {
+    margin-top: 8px;
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    text-align: right;
+    font-style: italic;
 }
-.stats_section h4 {
-    font-size: 0.9rem;
-    margin-bottom: 8px;
-    color: #555;
-}
+
+/* —— 방과후 통계 그리드 —— */
 .stats_grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 10px;
 }
 .stat {
-    background: #f7f9fc;
-    border-radius: 8px;
-    padding: 12px 10px;
+    background: linear-gradient(135deg, #FFFFFF 0%, #FBFAF6 100%);
+    border-radius: var(--radius-md);
+    padding: 16px 12px;
     text-align: center;
+    border: 1px solid var(--border-hair);
+    transition: all 0.3s var(--ease-spring);
+    position: relative;
+    overflow: hidden;
 }
+.stat::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--coral), var(--amber));
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.stat:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-strong);
+}
+.stat:hover::before { opacity: 1; }
+
 .stat_value {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #2c5aa0;
-    line-height: 1.1;
+    font-family: 'Fraunces', 'Pretendard', serif;
+    font-size: 1.65rem;
+    font-weight: 900;
+    color: var(--ink-deep);
+    letter-spacing: -0.02em;
+    line-height: 1;
 }
 .stat_label {
-    font-size: 0.75rem;
-    color: #777;
-    margin-top: 4px;
-}
-.stat_extra {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
     margin-top: 8px;
-    font-size: 0.8rem;
-    color: #666;
-    text-align: center;
+    font-weight: 600;
+    letter-spacing: -0.01em;
 }
 
-/* 카드 스크롤바 디자인 (선택) */
-.card::-webkit-scrollbar {
-    width: 6px;
+/* 🌟 클릭 가능한 stat (시연용: 주몽학교의 특기적성) */
+.stat.stat-clickable {
+    cursor: pointer;
+    background: linear-gradient(135deg, rgba(255, 90, 95, 0.10) 0%, rgba(255, 179, 71, 0.08) 100%);
+    border-color: rgba(255, 90, 95, 0.30);
+    outline: none;
 }
-.card::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
+.stat.stat-clickable::before {
+    opacity: 1;   /* 상단 코랄→앰버 스트라이프 항상 표시 */
 }
-.card::-webkit-scrollbar-track {
+.stat.stat-clickable::after {
+    content: '↗';
+    position: absolute;
+    top: 6px;
+    right: 9px;
+    font-size: 0.9rem;
+    color: var(--coral);
+    font-weight: 900;
+    transition: transform 0.25s var(--ease-spring);
+}
+.stat.stat-clickable .stat_value {
+    background: linear-gradient(135deg, var(--coral) 0%, var(--amber) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.stat.stat-clickable .stat_label {
+    color: var(--coral);
+    font-weight: 700;
+}
+.stat.stat-clickable:hover {
+    transform: translateY(-4px);
+    border-color: var(--coral);
+    box-shadow: 0 12px 28px -8px var(--coral-glow);
+    background: linear-gradient(135deg, rgba(255, 90, 95, 0.16) 0%, rgba(255, 179, 71, 0.12) 100%);
+}
+.stat.stat-clickable:hover::after {
+    transform: translate(3px, -3px);
+}
+.stat.stat-clickable:focus-visible {
+    box-shadow: 0 0 0 3px rgba(255, 90, 95, 0.30);
+}
+
+/* —— close 버튼 (카드 헤더) —— */
+.card_header .close_btn {
     background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--ink-mid);
+    cursor: pointer;
+    font-size: 0.82rem;
+    padding: 7px 14px;
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+    transition: all 0.2s var(--ease-out);
+}
+.card_header .close_btn:hover {
+    background: var(--ink-deep);
+    color: white;
+    border-color: var(--ink-deep);
+    transform: translateX(-2px);
 }
 
-/* =========================================
-   필터(Filter) 모달 및 UI 디자인
-========================================= */
+/* —— 카드 스크롤바 —— */
+.card::-webkit-scrollbar { width: 5px; }
+.card::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 10px; }
+.card::-webkit-scrollbar-track { background: transparent; }
 
-/* 1. 필터 전체 배경 (지도 위를 반투명하게 덮음) */
+
+/* =========================================================
+   2. 상단 검색 결과 알림창
+========================================================= */
+.result-info {
+    position: fixed;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--ink-deep) 0%, #1E3A5F 100%);
+    color: white;
+    padding: 12px 26px;
+    border-radius: var(--radius-pill);
+    font-size: 0.92rem;
+    font-weight: 600;
+    z-index: 15;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.5s var(--ease-spring);
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.result-info::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--mint);
+    box-shadow: 0 0 0 3px rgba(6, 214, 160, 0.25), 0 0 10px rgba(6, 214, 160, 0.6);
+    animation: brand-pulse 1.8s ease-in-out infinite;
+}
+.result-info.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, -16px);
+}
+.result-info span {
+    color: var(--amber-soft);
+    font-family: 'Fraunces', 'Pretendard', serif;
+    font-size: 1.25rem;
+    font-weight: 900;
+    margin: 0 2px;
+}
+
+
+/* =========================================================
+   3. 하단 플로팅 버튼들
+========================================================= */
+.current_location {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+#back_to_current_location {
+    background: var(--bg-paper);
+    color: var(--ink-deep);
+    border: 1px solid var(--border-hair);
+    padding: 14px 26px;
+    border-radius: var(--radius-pill);
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s var(--ease-spring);
+    letter-spacing: -0.01em;
+}
+#back_to_current_location:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--coral);
+    color: var(--coral);
+}
+
+/* —— 우측 하단 플로팅 버튼 그룹 —— */
+.filter_toggle {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: flex-end;
+}
+
+#open_filter_btn, #open_ai_chat_btn {
+    padding: 15px 26px;
+    border-radius: var(--radius-pill);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    color: white;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.35s var(--ease-spring);
+    letter-spacing: -0.01em;
+    position: relative;
+    overflow: hidden;
+}
+
+#open_filter_btn {
+    background: var(--ink-deep);
+    border: 1px solid rgba(255,255,255,0.06);
+}
+#open_filter_btn:hover {
+    background: #1A2A45;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-xl);
+}
+
+/* —— ✨ AI 추천 버튼 — 시그니처 그라데이션 + 글로우 —— */
+#open_ai_chat_btn {
+    background: linear-gradient(135deg, var(--coral) 0%, var(--amber) 50%, var(--coral) 100%);
+    background-size: 200% 200%;
+    animation: gradient-flow 4s ease infinite, pulse-glow-coral 2.4s infinite;
+    box-shadow: var(--shadow-coral), var(--shadow-lg);
+    font-weight: 800;
+}
+#open_ai_chat_btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.4) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.6s var(--ease-out);
+}
+#open_ai_chat_btn:hover::before {
+    transform: translateX(100%);
+}
+#open_ai_chat_btn:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 16px 40px -8px var(--coral-glow), var(--shadow-xl);
+}
+
+@keyframes gradient-flow {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+}
+@keyframes pulse-glow-coral {
+    0%   { box-shadow: 0 0 0 0   rgba(255,90,95,0.50), var(--shadow-lg); }
+    70%  { box-shadow: 0 0 0 16px rgba(255,90,95,0.00), var(--shadow-lg); }
+    100% { box-shadow: 0 0 0 0   rgba(255,90,95,0.00), var(--shadow-lg); }
+}
+
+
+/* =========================================================
+   4. 상세 필터 모달
+========================================================= */
 .filter {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.4); /* 반투명 검은색 배경 */
-    z-index: 20; /* 카드(10)보다 위층에 배치 */
-    
-    /* 기본적으로 화면에서 숨김 (JS로 .active 추가 시 나타남) */
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(14, 26, 43, 0.45);
+    backdrop-filter: blur(8px) saturate(1.2);
+    -webkit-backdrop-filter: blur(8px) saturate(1.2);
+    z-index: 40;
     opacity: 0;
     visibility: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.3s ease-in-out;
+    transition: opacity 0.35s var(--ease-out), visibility 0.35s var(--ease-out);
 }
+.filter.active { opacity: 1; visibility: visible; }
+.filter.hidden { opacity: 0; visibility: hidden; }
 
-/* 필터가 활성화되었을 때 */
-.filter.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* 2. 필터 박스 (실제 흰색 컨텐츠 영역) */
 .filter_box {
-    background-color: white;
-    width: 340px;
-    max-width: 90%;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    
-    max-height: 85vh; /* 화면 높이를 넘지 않도록 설정 */
-    overflow-y: auto; /* 내용이 길면 스크롤 생성 */
-    
-    /* 아래에서 위로 살짝 올라오는 애니메이션 효과 */
-    transform: translateY(20px);
-    transition: transform 0.3s ease-in-out;
+    background: var(--bg-paper);
+    width: 420px;
+    max-width: 92%;
+    padding: 32px;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border-hair);
+    max-height: 86vh;
+    overflow-y: auto;
+    transform: translateY(40px) scale(0.94);
+    transition: transform 0.45s var(--ease-spring);
+    position: relative;
+}
+.filter.active .filter_box { transform: translateY(0) scale(1); }
+
+/* Decorative top stripe */
+.filter_box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 32px; right: 32px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--coral), var(--amber), var(--mint), var(--indigo));
+    border-radius: 0 0 4px 4px;
 }
 
-.filter.active .filter_box {
-    transform: translateY(0);
-}
-
-/* 3. 헤더 (제목 및 닫기 버튼) */
 .filter_header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #333;
-    padding-bottom: 12px;
-    margin-bottom: 20px;
+    padding-bottom: 18px;
+    margin-bottom: 26px;
+    border-bottom: 1px solid var(--border-hair);
 }
-
 .filter_header h3 {
-    font-size: 1.15rem;
-    color: #222;
+    font-family: 'Fraunces', 'Pretendard', serif;
+    font-size: 1.45rem;
+    font-weight: 900;
+    color: var(--ink-deep);
+    letter-spacing: -0.02em;
 }
-
-/* 4. 각 필터 항목 그룹 */
-.filter_group {
-    margin-bottom: 20px;
+.filter_header h3::after {
+    content: '·';
+    color: var(--coral);
+    margin-left: 6px;
 }
-
-.filter_group > label {
-    display: block;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #444;
-    margin-bottom: 8px;
-}
-
-/* Select 박스 (드롭다운) 디자인 */
-.filter_group select {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    color: #333;
-    background-color: #fdfdfd;
-    outline: none;
+.filter_header .close_btn {
+    width: 34px; height: 34px;
+    padding: 0;
+    border-radius: 50%;
+    background: var(--bg-cream);
+    border: 1px solid var(--border-hair);
+    color: var(--ink-mid);
     cursor: pointer;
-    transition: border-color 0.2s;
-}
-
-.filter_group select:focus {
-    border-color: #2c5aa0; /* 선택 시 기존 통계 색상과 통일감 부여 */
-}
-
-/* 5. 다중 선택 (체크박스) 디자인 - 알약(Pill) 모양 뱃지 느낌 */
-.checkbox_group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.checkbox_group label {
+    font-size: 0.85rem;
+    font-weight: 700;
     display: flex;
     align-items: center;
+    justify-content: center;
+    transition: all 0.2s var(--ease-out);
+}
+.filter_header .close_btn:hover {
+    background: var(--ink-deep);
+    color: white;
+    border-color: var(--ink-deep);
+    transform: rotate(90deg);
+}
+
+.filter_group { margin-bottom: 22px; }
+.filter_group > label {
+    display: block;
     font-size: 0.85rem;
-    color: #444;
-    background-color: #f7f9fc;
-    padding: 8px 12px;
-    border-radius: 20px;
-    border: 1px solid #e2e8f0;
-    cursor: pointer;
-    font-weight: normal;
-    margin-bottom: 0;
-    transition: background-color 0.2s;
+    font-weight: 700;
+    color: var(--ink-deep);
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+    text-transform: none;
+    position: relative;
+    padding-left: 14px;
+}
+.filter_group > label::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 14px;
+    background: var(--coral);
+    border-radius: 4px;
 }
 
+/* select */
+.filter_group select {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    color: var(--ink-deep);
+    background-color: var(--bg-cream);
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s var(--ease-out);
+    font-weight: 500;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%230E1A2B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 38px;
+}
+.filter_group select:focus {
+    border-color: var(--coral);
+    box-shadow: 0 0 0 4px rgba(255, 90, 95, 0.12);
+    background-color: white;
+}
+
+/* —— 체크박스 알약 —— */
+.checkbox_group { display: flex; flex-wrap: wrap; gap: 8px; }
+.checkbox_group label {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.88rem;
+    color: var(--ink-mid);
+    background-color: var(--bg-cream);
+    padding: 9px 16px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border-hair);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.25s var(--ease-spring);
+    user-select: none;
+    position: relative;
+}
 .checkbox_group label:hover {
-    background-color: #eef2f6;
+    border-color: var(--coral-soft);
+    color: var(--ink-deep);
+    transform: translateY(-1px);
 }
-
 .checkbox_group input[type="checkbox"] {
-    margin-right: 6px;
+    margin-right: 8px;
+    accent-color: var(--coral);
+    transform: scale(1.05);
     cursor: pointer;
-    accent-color: #2c5aa0; /* 체크 표시 색상 */
+}
+/* selected state */
+.checkbox_group label:has(input:checked) {
+    background: var(--ink-deep);
+    color: white;
+    border-color: var(--ink-deep);
+    box-shadow: 0 4px 12px -4px rgba(14, 26, 43, 0.3);
 }
 
-/* 안내 문구 */
 .filter_hint {
-    font-size: 0.75rem;
-    color: #888;
-    margin-top: 6px;
-    line-height: 1.4;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin-top: 8px;
+    line-height: 1.5;
+    font-style: italic;
 }
 
-/* 6. 하단 버튼 영역 (초기화 & 적용) */
+/* 필터 하단 버튼 */
 .filter_footer {
     display: flex;
-    gap: 10px;
-    margin-top: 24px;
-    border-top: 1px solid #eee;
-    padding-top: 16px;
+    gap: 12px;
+    margin-top: 30px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border-hair);
 }
-
 .filter_footer button {
-    flex: 1; /* 두 버튼을 5:5 비율로 맞춤 */
-    padding: 12px;
+    flex: 1;
+    padding: 15px;
     border: none;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: bold;
+    border-radius: var(--radius-md);
+    font-size: 0.98rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.25s var(--ease-spring);
+    letter-spacing: -0.01em;
 }
-
 .btn_reset {
-    background-color: #f1f3f5;
-    color: #555;
+    background: var(--bg-cream);
+    color: var(--ink-mid);
+    border: 1px solid var(--border-hair) !important;
 }
-
 .btn_reset:hover {
-    background-color: #e9ecef;
+    background: #F0EBE2;
+    color: var(--ink-deep);
 }
-
 .btn_apply {
-    background-color: #2c5aa0; /* 메인 테마 색상 */
+    background: linear-gradient(135deg, var(--ink-deep) 0%, #1E3A5F 100%);
     color: white;
+    box-shadow: 0 8px 20px -6px rgba(14, 26, 43, 0.4);
+    position: relative;
+    overflow: hidden;
 }
-
+.btn_apply::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.6s var(--ease-out);
+}
+.btn_apply:hover::before { transform: translateX(100%); }
 .btn_apply:hover {
-    background-color: #21437a;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -6px rgba(14, 26, 43, 0.5);
 }
 
-/* 🌟 필터 열기 버튼 위치 및 디자인 */
-.filter_toggle {
+
+/* =========================================================
+   5. AI 채팅 모달
+========================================================= */
+.ai-chat-window {
     position: fixed;
-    bottom: 24px;
-    right: 20px; /* 화면 우측 하단에 배치 */
-    z-index: 10; /* 지도 위에 보이도록 */
+    bottom: 100px;
+    right: 28px;
+    width: 380px;
+    max-width: 92vw;
+    height: 600px;
+    max-height: 78vh;
+    background: var(--bg-paper);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border-hair);
+    display: flex;
+    flex-direction: column;
+    z-index: 30;
+    overflow: hidden;
+    transform-origin: bottom right;
+    transition: all 0.4s var(--ease-spring);
 }
-
-#open_filter_btn {
-    background-color: #2c5aa0;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 999px;
-    font-size: 0.95rem;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.2s ease-in-out;
-}
-
-#open_filter_btn:hover {
-    background-color: #21437a;
-}
-
-.result-info {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%); /* 화면 정확히 중앙에 배치 */
-    background-color: rgba(44, 90, 160, 0.9); /* 파란색 반투명 배경 */
-    color: white;
-    padding: 10px 24px;
-    border-radius: 30px;
-    font-size: 1rem;
-    font-weight: bold;
-    z-index: 15; /* 지도(1)나 카드(10)보다 높게 설정 */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    
-    /* 부드럽게 나타나고 사라지는 효과 */
-    opacity: 1;
-    visibility: visible;
-    transition: all 0.4s ease-in-out;
-}
-
-.result-info.hidden {
+.ai-chat-window.hidden {
     opacity: 0;
     visibility: hidden;
-    transform: translate(-50%, -10px); /* 사라질 때 살짝 위로 올라감 */
+    transform: translateY(30px) scale(0.85);
 }
 
-.result-info span {
-    color: #ffd66b; /* 숫자에만 노란색 포인트 */
+.chat-header {
+    background:
+        linear-gradient(135deg, var(--coral) 0%, var(--amber) 100%);
+    background-size: 200% 200%;
+    animation: gradient-flow 6s ease infinite;
+    color: white;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+.chat-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.25), transparent 50%),
+        radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.30), transparent 50%);
+    pointer-events: none;
+}
+.chat-header h3 {
+    font-family: 'Fraunces', 'Pretendard', serif;
+    font-size: 1.2rem;
+    font-weight: 900;
+    margin: 0;
+    letter-spacing: -0.02em;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.chat-header button {
+    background: rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.25s var(--ease-spring);
+    z-index: 1;
+}
+.chat-header button:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: rotate(90deg);
+}
+
+.chat-body {
+    flex: 1;
+    padding: 24px 22px;
+    overflow-y: auto;
+    background:
+        linear-gradient(180deg, var(--bg-cream) 0%, #FFFFFF 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: relative;
+}
+.chat-body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 1px 1px, rgba(14, 26, 43, 0.04) 1px, transparent 0);
+    background-size: 20px 20px;
+    pointer-events: none;
+}
+
+.chat-bubble {
+    max-width: 86%;
+    padding: 13px 18px;
+    border-radius: 18px;
+    font-size: 0.93rem;
+    line-height: 1.55;
+    word-break: break-word;
+    position: relative;
+    z-index: 1;
+    letter-spacing: -0.01em;
+}
+.chat-bubble.ai {
+    background: white;
+    color: var(--ink-deep);
+    align-self: flex-start;
+    border-bottom-left-radius: 6px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-hair);
+}
+.chat-bubble.user {
+    background: linear-gradient(135deg, var(--ink-deep) 0%, #1E3A5F 100%);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 6px;
+    box-shadow: 0 4px 12px -4px rgba(14, 26, 43, 0.3);
+}
+
+.ai-school-link {
+    display: inline-block;
+    color: var(--coral);
+    font-weight: 800;
+    text-decoration: none;
+    cursor: pointer;
+    margin-top: 8px;
+    padding: 7px 14px;
+    background: rgba(255, 90, 95, 0.08);
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(255, 90, 95, 0.18);
+    transition: all 0.25s var(--ease-spring);
+    font-size: 0.85rem;
+}
+.ai-school-link:hover {
+    background: var(--coral);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-coral);
+}
+
+/* =========================================================
+   4-1. AI 추천 — 로딩(타이핑 점) + 학교 추천 카드
+========================================================= */
+
+/* 로딩 버블: "찾고 있습니다..." + 타이핑 점 */
+.chat-bubble.ai-loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+    color: var(--ink-mid);
+}
+.chat-bubble.ai-loading .loading-text {
+    background: linear-gradient(90deg, var(--ink-mid) 0%, var(--coral) 50%, var(--ink-mid) 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer-text 2s ease-in-out infinite;
+}
+@keyframes shimmer-text {
+    0%, 100% { background-position: 200% 50%; }
+    50%      { background-position: 0% 50%; }
+}
+
+.typing-dots {
+    display: inline-flex;
+    gap: 4px;
+    margin-left: 6px;
+    align-items: flex-end;
+    height: 14px;
+}
+.typing-dots span {
+    width: 6px; height: 6px;
+    background: var(--coral);
+    border-radius: 50%;
+    animation: typing-bounce 1.3s ease-in-out infinite;
+    box-shadow: 0 2px 4px rgba(255, 90, 95, 0.35);
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.15s; background: var(--amber); box-shadow: 0 2px 4px rgba(255, 179, 71, 0.35); }
+.typing-dots span:nth-child(3) { animation-delay: 0.30s; background: var(--indigo); box-shadow: 0 2px 4px rgba(79, 70, 229, 0.35); }
+
+@keyframes typing-bounce {
+    0%, 60%, 100% { transform: translateY(0)   scale(0.85); opacity: 0.55; }
+    30%           { transform: translateY(-8px) scale(1);    opacity: 1; }
+}
+
+/* AI 추천 버블 내부 — 학교 카드 묶음 */
+.chat-bubble.ai-recommendation {
+    max-width: 92%;
+    padding: 16px 18px;
+}
+.ai-recommendation_intro {
+    font-size: 0.93rem;
+    line-height: 1.55;
+    color: var(--ink-deep);
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+.ai-recommendation_intro b {
+    color: var(--coral);
+    font-weight: 800;
+}
+
+/* 개별 학교 추천 카드 */
+.ai-school-card {
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, rgba(255, 90, 95, 0.04) 0%, rgba(255, 179, 71, 0.04) 100%);
+    border: 1px solid rgba(255, 90, 95, 0.18);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s var(--ease-spring);
+    position: relative;
+    overflow: hidden;
+    outline: none;
+}
+.ai-school-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, var(--coral), var(--amber));
+    border-radius: 4px 0 0 4px;
+}
+/* 두 번째/세 번째 카드는 다른 사이드 컬러 */
+.ai-school-card:nth-child(3)::before { background: linear-gradient(180deg, var(--indigo), var(--violet)); }
+.ai-school-card:nth-child(4)::before { background: linear-gradient(180deg, var(--mint), #0EA5E9); }
+
+.ai-school-card:hover {
+    transform: translateX(3px);
+    border-color: var(--coral);
+    background: linear-gradient(135deg, rgba(255, 90, 95, 0.10) 0%, rgba(255, 179, 71, 0.08) 100%);
+    box-shadow: 0 8px 20px -8px var(--coral-glow);
+}
+.ai-school-card:hover .ai-school-card_arrow {
+    transform: translateX(4px);
+    color: var(--coral);
+}
+.ai-school-card:focus-visible {
+    box-shadow: 0 0 0 3px rgba(255, 90, 95, 0.25);
+}
+
+.ai-school-card_top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.ai-school-card_badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: white;
+    background: linear-gradient(135deg, var(--coral), var(--amber));
+    padding: 3px 8px;
+    border-radius: var(--radius-pill);
+    letter-spacing: 0.02em;
+    box-shadow: 0 2px 6px rgba(255, 90, 95, 0.3);
+    flex-shrink: 0;
+}
+.ai-school-card:nth-child(3) .ai-school-card_badge { background: linear-gradient(135deg, var(--indigo), var(--violet)); box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3); }
+.ai-school-card:nth-child(4) .ai-school-card_badge { background: linear-gradient(135deg, var(--mint), #0EA5E9); box-shadow: 0 2px 6px rgba(6, 214, 160, 0.3); }
+
+.ai-school-card_name {
+    font-family: 'Fraunces', 'Pretendard', serif;
+    font-weight: 800;
+    font-size: 1.02rem;
+    color: var(--ink-deep);
+    letter-spacing: -0.02em;
+    flex: 1;
+}
+.ai-school-card_arrow {
     font-size: 1.1rem;
+    color: var(--ink-faint);
+    font-weight: 700;
+    transition: transform 0.25s var(--ease-spring), color 0.2s;
+}
+.ai-school-card_reason {
+    font-size: 0.83rem;
+    color: var(--ink-mid);
+    line-height: 1.55;
+    margin-top: 2px;
+}
+
+/* 입력창 disabled 상태 */
+.chat-input-area input:disabled {
+    background: var(--bg-cream);
+    color: var(--ink-faint);
+    cursor: not-allowed;
+}
+.chat-input-area button:disabled {
+    background: var(--ink-faint);
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+    opacity: 0.7;
+}
+
+.chat-input-area {
+    display: flex;
+    padding: 14px 18px;
+    background: white;
+    border-top: 1px solid var(--border-hair);
+    gap: 10px;
+}
+.chat-input-area input {
+    flex: 1;
+    padding: 13px 18px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    outline: none;
+    font-size: 0.93rem;
+    background: var(--bg-cream);
+    transition: all 0.25s var(--ease-out);
+    letter-spacing: -0.01em;
+}
+.chat-input-area input:focus {
+    border-color: var(--coral);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(255, 90, 95, 0.12);
+}
+.chat-input-area button {
+    background: linear-gradient(135deg, var(--coral) 0%, var(--coral-soft) 100%);
+    color: white;
+    border: none;
+    padding: 0 22px;
+    border-radius: var(--radius-pill);
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.25s var(--ease-spring);
+    font-size: 0.92rem;
+    box-shadow: var(--shadow-coral);
+    letter-spacing: -0.01em;
+}
+.chat-input-area button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 20px -4px var(--coral-glow);
+}
+
+
+/* =========================================================
+   6. 카카오맵 커스텀 마커 (사용자 위치 점)
+========================================================= */
+.user-location-dot {
+    width: 16px;
+    height: 16px;
+    background: var(--coral);
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow:
+        0 0 0 4px rgba(255, 90, 95, 0.20),
+        0 4px 12px rgba(255, 90, 95, 0.40);
+    animation: brand-pulse 2s ease-in-out infinite;
+    position: relative;
+}
+.user-location-dot::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: rgba(255, 90, 95, 0.12);
+    animation: ripple 2.4s ease-out infinite;
+}
+@keyframes ripple {
+    0%   { transform: scale(0.6); opacity: 1; }
+    100% { transform: scale(2.4); opacity: 0; }
+}
+
+
+/* =========================================================
+   7. .hidden 유틸 — 카드용 (모달과 별도)
+========================================================= */
+.card.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-24px) scale(0.98);
+}
+
+
+/* =========================================================
+   8. 반응형 (모바일)
+========================================================= */
+@media (max-width: 768px) {
+    body::after {
+        font-size: 0.7rem;
+        padding: 8px 14px 8px 30px;
+    }
+    .brand-dot { top: 27px; left: 32px; width: 7px; height: 7px; }
+
+    .card {
+        width: calc(100% - 24px);
+        left: 12px;
+        right: 12px;
+        top: 70px;
+        max-height: 65vh;
+    }
+    .filter_toggle { bottom: 20px; right: 16px; gap: 10px; }
+    #open_filter_btn, #open_ai_chat_btn { padding: 12px 20px; font-size: 0.88rem; }
+    .current_location { bottom: 90px; }
+    .ai-chat-window {
+        right: 12px; left: 12px;
+        width: auto; bottom: 84px;
+        height: 70vh;
+    }
 }
