@@ -6,8 +6,14 @@ const AI_RECOMMENDED_SCHOOLS = [
         disable_type: '정신지체',
         tel: '02-987-1234',
         homepage: 'www.seouljungae.sc.kr',
-        photo: 'https://via.placeholder.com/400x200/FF5A5F/FFFFFF?text=%EC%84%9C%EC%9A%B8%EC%A0%95%EC%95%A0%ED%95%99%EA%B5%90',
-        reason: '서울 강북권에 위치한 공립 특수학교로, 지적장애·자폐성장애 학생을 위한 체계적인 교육과정과 다양한 직업 체험 프로그램을 운영하고 있어 사회 적응력 향상에 강점이 있습니다.'
+        photo: '/static/images/서울정애학교.jpg',
+        reason: '서울 강북권에 위치한 공립 특수학교로, 지적장애·자폐성장애 학생을 위한 체계적인 교육과정과 다양한 직업 체험 프로그램을 운영하고 있어 사회 적응력 향상에 강점이 있습니다.',
+        // 🌟 비교용 데이터
+        match_score: 92,
+        commute_time_min: 25,
+        disability_focus: '정신지체·자폐',
+        class_size: 5,
+        afterschool_summary: '교과·특기'
     },
     {
         name: '밀알학교',
@@ -16,8 +22,14 @@ const AI_RECOMMENDED_SCHOOLS = [
         disable_type: '자폐성장애',
         tel: '02-3411-1234',
         homepage: 'www.miral.sc.kr',
-        photo: 'https://via.placeholder.com/400x200/4F46E5/FFFFFF?text=%EB%B0%80%EC%95%8C%ED%95%99%EA%B5%90',
-        reason: '강남구 일원동에 자리한 사립 특수학교로, 통합교육 환경과 예술·체육 중심의 방과후 활동이 활발하여 학생 개개인의 강점을 키울 수 있는 환경이 우수합니다.'
+        photo: '/static/images/밀알학교.jpg',
+        reason: '강남구 일원동에 자리한 사립 특수학교로, 통합교육 환경과 예술·체육 중심의 방과후 활동이 활발하여 학생 개개인의 강점을 키울 수 있는 환경이 우수합니다.',
+        // 🌟 비교용 데이터
+        match_score: 87,
+        commute_time_min: 40,
+        disability_focus: '정신지체',
+        class_size: 6,
+        afterschool_summary: '종일반'
     },
     {
         name: '한국육영학교',
@@ -26,8 +38,14 @@ const AI_RECOMMENDED_SCHOOLS = [
         disable_type: '정신지체',
         tel: '02-2606-1234',
         homepage: 'www.koreayookyoung.sc.kr',
-        photo: 'https://via.placeholder.com/400x200/06D6A0/FFFFFF?text=%ED%95%9C%EA%B5%AD%EC%9C%A1%EC%98%81%ED%95%99%EA%B5%90',
-        reason: '오랜 역사와 풍부한 임상 경험을 가진 교사진이 안정적인 교사당 학생 비율 속에서 학생 한 명 한 명을 세심하게 돌보는 학교로, 학습 만족도가 매우 높습니다.'
+        photo: '/static/images/한국육영학교.jpg',
+        reason: '오랜 역사와 풍부한 임상 경험을 가진 교사진이 안정적인 교사당 학생 비율 속에서 학생 한 명 한 명을 세심하게 돌보는 학교로, 학습 만족도가 매우 높습니다.',
+        // 🌟 비교용 데이터
+        match_score: 81,
+        commute_time_min: 35,
+        disability_focus: '전 영역',
+        class_size: 4,
+        afterschool_summary: '교과'
     }
 ];
 
@@ -116,6 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
        2) "찾고 있습니다..." 로딩 버블 5초 노출
        3) 추천 학교 3곳 카드 형태로 표시
        4) 카드 클릭 → 지도 이동 + 학교 카드 오픈
+       5) 🌟 "3곳 한눈에 비교하기" 버튼 → 비교 모달 열기
     ========================================================= */
     let isWaitingForAI = false;
 
@@ -144,11 +163,15 @@ document.addEventListener("DOMContentLoaded", () => {
         b.className = 'chat-bubble ai ai-recommendation';
         const cards = AI_RECOMMENDED_SCHOOLS.map((s, i) => `
             <div class="ai-school-card" data-idx="${i}" role="button" tabindex="0">
+                <img class="ai-school-card_photo" src="${s.photo}" alt="${s.name} 사진">
+
                 <div class="ai-school-card_top">
                     <span class="ai-school-card_badge">추천 ${i + 1}</span>
                     <span class="ai-school-card_name">${s.name}</span>
+                    <span class="ai-school-card_score">${s.match_score}점</span>
                     <span class="ai-school-card_arrow" aria-hidden="true">→</span>
                 </div>
+
                 <div class="ai-school-card_reason">${s.reason}</div>
             </div>
         `).join('');
@@ -158,6 +181,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 학교 카드를 누르면 지도에서 위치를 확인할 수 있어요.
             </div>
             ${cards}
+            <button class="compare_open_btn" id="compare_open_btn" type="button">
+                <span class="compare_open_btn_icon">⚖️</span>
+                <span>3곳 한눈에 비교하기</span>
+                <span class="compare_open_btn_arrow">→</span>
+            </button>
         `;
         chatBody.appendChild(b);
         scrollChatToBottom();
@@ -209,9 +237,21 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    /* AI 추천 학교 카드 클릭 — 이벤트 위임 */
+    /* AI 추천 학교 카드 클릭 + 비교 버튼 클릭 — 이벤트 위임 */
     if (chatBody) {
         chatBody.addEventListener('click', (e) => {
+            // 🌟 비교 버튼 클릭 처리 (학교 카드보다 먼저 체크)
+            const compareBtn = e.target.closest('.compare_open_btn');
+            if (compareBtn) {
+                e.preventDefault();
+                window.currentCompareSchools = AI_RECOMMENDED_SCHOOLS;
+                if (typeof window.openCompareModal === 'function') {
+                    window.openCompareModal(AI_RECOMMENDED_SCHOOLS);
+                }
+                return;
+            }
+
+            // 학교 카드 클릭 처리
             const card = e.target.closest('.ai-school-card');
             if (!card) return;
             const idx = parseInt(card.dataset.idx, 10);
@@ -261,3 +301,6 @@ function navigateToRecommendedSchool(school) {
         if (typeof fillCard === 'function') fillCard(school);
     }
 }
+
+/* 전역 노출 — compare.js에서도 호출 가능 */
+window.navigateToRecommendedSchool = navigateToRecommendedSchool;

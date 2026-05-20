@@ -99,6 +99,14 @@ def get_schools():
     
     schools = []
     for s in rows:
+        photo_filename = f"{s.name}.jpg"
+        photo_path = os.path.join(app.static_folder, "images", photo_filename)
+        photo_url = (
+            f"/static/images/{photo_filename}"
+            if os.path.exists(photo_path)
+            else "/static/images/default.jpg"
+        )
+
         schools.append({
             "name": s.name,
             "address": s.address,
@@ -106,7 +114,7 @@ def get_schools():
             "homepage": s.homepage,
             "founder": s.founder,
             "disable_type": s.disable_type,
-            "photo": f"/static/images/default.jpg"
+            "photo": photo_url
         })
     return jsonify(schools)
 # -------------------------------------------------------------------------

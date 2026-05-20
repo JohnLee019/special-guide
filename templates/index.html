@@ -188,8 +188,23 @@
             <button id="send_chat_btn">전송</button>
         </div>
     </div>
+
+    <!-- 🌟 학교 비교 모달 -->
+    <div id="compare_modal" class="compare-modal hidden" role="dialog" aria-labelledby="compare_title" aria-modal="true">
+        <div class="compare_dialog">
+            <div class="compare_header">
+                <h2 id="compare_title">학교 비교</h2>
+                <button class="compare_close_btn" aria-label="비교 창 닫기">✕</button>
+            </div>
+            <div class="compare_body">
+                <!-- compare.js에서 동적으로 채움 -->
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/card.js')}}"></script>
     <script src="{{ url_for('static', filename='js/map.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/compare.js')}}"></script>
     <script src="{{ url_for('static', filename='js/filter.js')}}"></script>
 </body>
 </html>
